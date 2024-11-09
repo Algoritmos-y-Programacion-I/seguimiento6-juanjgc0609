@@ -1,133 +1,211 @@
 package ui;
 
 import java.util.Scanner;
-
 import model.SpeciesController;
 
+/**
+ * The SpeciesExecutable class provides a console-based interface for managing species.
+ */
 public class SpeciesExecutable {
 
-	private Scanner reader;
-	private SpeciesController speciesController;
+    private Scanner reader;
+    private SpeciesController speciesController;
 
-	public static void main(String[] args) {
-		SpeciesExecutable exe = new SpeciesExecutable();
-		exe.showMainMenu();
-	}
+    /**
+     * Main method to run the SpeciesExecutable program.
+     * 
+     * @param args command line arguments (not used)
+     */
+    public static void main(String[] args) {
+        SpeciesExecutable exe = new SpeciesExecutable();
+        exe.showMainMenu();
+    }
 
-	public SpeciesExecutable() {
+    /**
+     * Constructor to initialize the SpeciesExecutable object.
+     */
+    public SpeciesExecutable() {
+        reader = new Scanner(System.in);
+        speciesController = new SpeciesController();
+    }
 
-		reader = new Scanner(System.in);
-		speciesController = new SpeciesController();
-	}
+    /**
+     * Displays the main menu and handles user input.
+     */
+    public void showMainMenu() {
+        System.out.println("Welcome to Icesi Species");
 
-	public void showMainMenu() {
+        boolean stopFlag = false;
 
-		System.out.println("Welcome to Icesi Species");
+        while (!stopFlag) {
+            System.out.println("\nType an option");
+            System.out.println("1. Register a Species");
+            System.out.println("2. Edit a Species");
+            System.out.println("3. Delete a Species");
+            System.out.println("4. Show all Species");
+            System.out.println("0. Exit");
 
-		boolean stopFlag = false;
+            int mainOption = reader.nextInt();
 
-		while (!stopFlag) {
+            switch (mainOption) {
+                case 1:
+                    registerSpecies();
+                    break;
+                case 2:
+                    editSpecies();
+                    break;
+                case 3:
+                    deleteSpecies();
+                    break;
+                case 4:
+                    showAllSpecies();
+                    break;
+                case 0:
+                    System.out.println("Thanks for using our system");
+                    stopFlag = true;
+                    break;
+                default:
+                    System.out.println("You must type a valid option");
+                    break;
+            }
+        }
+    }
 
-			System.out.println("\nType an option");
-			System.out.println("1. Register a Species");
-			System.out.println("2. Edit a Species");
-			System.out.println("3. Delete a Species");
-			System.out.println("0. Exit");
+    /**
+     * Registers a new species.
+     */
+    public void registerSpecies() {
+        System.out.println("Type the new Species' name: ");
+        String name = reader.next();
 
-			int mainOption = reader.nextInt();
+        System.out.println("Type the new Species' scientific name: ");
+        String scientificName = reader.next();
 
-			switch (mainOption) {
+        System.out.println("Is it flora or fauna? (Type 'flora' or 'fauna')");
+        String type = reader.next().toLowerCase();
 
-			case 1:
-				registerSpecies();
-				break;
-			case 2:
-				editSpecies();
-				break;
-			case 3:
-				deleteSpecies();
-				break;
-			case 0:
-				System.out.println("Thanks for using our system");
-				stopFlag = true;
-				break;
-			default:
-				System.out.println("You must type a valid option");
-				break;
+        boolean result = false;
 
-			}
+        if (type.equals("flora")) {
+            System.out.println("Does it have flowers? (true/false)");
+            boolean hasFlowers = reader.nextBoolean();
 
-		}
+            System.out.println("Does it have fruits? (true/false)");
+            boolean hasFruits = reader.nextBoolean();
 
-	}
+            System.out.println("Type the maximum height (in meters) it can reach: ");
+            double maxHeight = reader.nextDouble();
 
-	public void registerSpecies() {
+            result = speciesController.registerFlora(name, scientificName, hasFlowers, hasFruits, maxHeight);
 
-		System.out.println("Type the new Species' name: ");
-		String name = reader.next();
+        } else if (type.equals("fauna")) {
+            System.out.println("Is it migratory? (true/false)");
+            boolean isMigratory = reader.nextBoolean();
 
-		System.out.println("Type the new Species' scientific name: ");
-		String scientificName = reader.next();
+            System.out.println("Type the maximum weight (in kilograms) it can reach: ");
+            double maxWeight = reader.nextDouble();
 
-		if (speciesController.registerSpecies(name, scientificName)) {
+            result = speciesController.registerFauna(name, scientificName, isMigratory, maxWeight);
+        }
 
-			System.out.println("Species registered successfully");
+        if (result) {
+            System.out.println("Species registered successfully");
+        } else {
+            System.out.println("Error, Species couldn't be registered");
+        }
+    }
 
-		} else {
+    /**
+     * Edits an existing species.
+     */
+    public void editSpecies() {
+        System.out.println("Which Species do you want to edit?");
 
-			System.out.println("Error, Species couldn't be registered");
-		}
+        showAllSpecies();
 
-	}
+        int index = reader.nextInt() - 1;
 
-	public void editSpecies() {
+        System.out.println("Type the new Species' name: ");
+        String name = reader.next();
 
-		System.out.println("Which Species do you want to edit?");
+        System.out.println("Type the new Species' scientific name: ");
+        String scientificName = reader.next();
 
-		String query = speciesController.showSpeciesList();
+        System.out.println("Is it flora or fauna? (Type 'flora' or 'fauna')");
+        String type = reader.next().toLowerCase();
 
-		if (!query.equals("")) {
-			System.out.println(query);
+        boolean result = false;
 
-			// ...
+        if (type.equals("flora")) {
+            System.out.println("Does it have flowers? (true/false)");
+            boolean hasFlowers = reader.nextBoolean();
 
-		} else {
-			System.out.println("There aren't any species registered yet");
-		}
+            System.out.println("Does it have fruits? (true/false)");
+            boolean hasFruits = reader.nextBoolean();
 
-	}
+            System.out.println("Type the maximum height (in meters) it can reach: ");
+            double maxHeight = reader.nextDouble();
 
-	public void deleteSpecies() {
+            result = speciesController.editFlora(index, name, scientificName, hasFlowers, hasFruits, maxHeight);
 
-		System.out.println("Which Species do you want to delete?");
+        } else if (type.equals("fauna")) {
+            System.out.println("Is it migratory? (true/false)");
+            boolean isMigratory = reader.nextBoolean();
 
-		String query = speciesController.showSpeciesList();
+            System.out.println("Type the maximum weight (in kilograms) it can reach: ");
+            double maxWeight = reader.nextDouble();
 
-		if (!query.equals("")) {
-			System.out.println(query);
+            result = speciesController.editFauna(index, name, scientificName, isMigratory, maxWeight);
+        }
 
-			// ...
+        if (result) {
+            System.out.println("Species edited successfully");
+        } else {
+            System.out.println("Error, Species couldn't be edited");
+        }
+    }
 
-		} else {
-			System.out.println("There aren't any species registered yet");
-		}
+    /**
+     * Deletes an existing species.
+     */
+    public void deleteSpecies() {
+        System.out.println("Which Species do you want to delete?");
 
-	}
+        showAllSpecies();
 
-	public void showSpecies() {
+        int index = reader.nextInt() - 1;
 
-		System.out.println("Which Species do you want to review?");
+        if (speciesController.removeSpecies(index)) {
+            System.out.println("Species deleted successfully");
+        } else {
+            System.out.println("Error, Species couldn't be deleted");
+        }
+    }
 
-		String query = speciesController.showSpeciesList();
+    /**
+     * Displays all registered species in a formatted table.
+     */
+    public void showAllSpecies() {
+        String[][] speciesTable = speciesController.getSpeciesTable();
 
-		if (!query.equals("")) {
-			System.out.println(query);
-
-			// ...
-
-		} else {
-			System.out.println("There aren't any species registered yet");
-		}
-
-	}
+        if (speciesTable.length > 0) {
+            System.out.println("Species List:");
+            System.out.println("------------------------------------------------------------------------------------------------------------");
+            System.out.println("| Index | Name         | Scientific Name | Type   | Flowers | Fruits | Max Height | Migratory | Max Weight |");
+            System.out.println("------------------------------------------------------------------------------------------------------------");
+            for (int i = 0; i < speciesTable.length; i++) {
+                String[] species = speciesTable[i];
+                System.out.printf("| %-5d | %-12s | %-15s | %-6s | %-7s | %-6s | %-9s | %-9s | %-9s |\n",
+                        (i + 1), species[1], species[2], species[0],
+                        (species[0].equals("Flora") ? species[3] : "N/A"),
+                        (species[0].equals("Flora") ? species[4] : "N/A"),
+                        (species[0].equals("Flora") ? species[5] : "N/A"),
+                        (species[0].equals("Fauna") ? species[3] : "N/A"),
+                        (species[0].equals("Fauna") ? species[4] : "N/A"));
+            }
+            System.out.println("------------------------------------------------------------------------------------------------------------");
+        } else {
+            System.out.println("There aren't any species registered yet");
+        }
+    }
 }
